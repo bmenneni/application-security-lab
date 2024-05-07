@@ -51,7 +51,7 @@
 	}
 	
 	.urlFont {
-		font-family: 'Lucida Grande'; 
+		font-family: 'Lucida'; 
 	}
 	
 	.pageHeader {
@@ -132,9 +132,17 @@
             <div class="pageHeader">
                 <h2>Introduction</h2>
             </div>
-            <p>In this lab, you will be looking at security at the application layer involving a Java Security Demo API and an associated database. The application layer uses the Hypertext Transfer Protocol (HTTP) to access and manage files through a command-and-response message structure. The HTTP protocol uses different methods, the most common being the GET method (which fetches data from an endpoint) and the POST method (which lets you input some data at an endpoint). </p>
-			<p>For example, when you sign up for an account on a social media or e-commerce website, you are likely sending data to a web server through an HTTP POST method. The web application hosted on the server likely has a repository service that is associated with a database, and that database is then updated based on your new account data. Thus, a full-stack application (i.e., an application with both a frontend and the backend) will have to deal with security at multiple layers, from the information that is stored and retrieved from the database to the user-facing components like a login screen.</p>
-			<p>This lab will introduce you to the basics of web application security including password encoding in databases, user authentication, and user authorization for controlling access to endpoints. You will also examine the logs of the web application to identify security events, which is a valuable skill in network security as well as application debugging.</p>
+            <p>The application layer uses the Hypertext Transfer Protocol (HTTP) to access and manage files through a command-and-response message structure. The HTTP protocol uses different methods, the most common being the GET method (which fetches data, usually in the form of HTML documents) and the POST method (which lets you provide data that the web application can use). After sending an HTTP request, you receive an HTTP response message, which gives you information about the attempted transfer using a status code. The HTTP status codes are organized based on the type of status. You have probably encountered some when casually browsing the Internet; for example, a commonly seen HTTP status code is 404 (a type of client-side error, indicated by the starting digit '4'), which is returned when a requested document or resource could not be found at a particular URL.</p>
+			<p>A <strong>URL</strong> (Uniform Resource Locator) is the address of a resource on the Internet. To access a specific resource, you type a specific URL in your <strong>browser</strong> (like Google Chrome), which sends a GET request for that URL. A browser is a type of <strong>client</strong>, which is an application that sends requests to other applications. A client is used to communicate with a <strong>server</strong>, which is an application or computer that waits for a client to intiate a connection to it and then provides information or services to the client. Typically, web applications are hosted on web servers. When you send HTTP requests to use a web application, you send HTTP requests to the server hosting that application, and those HTTP requests are then mapped onto particular functions in the application's logic.</p>
+			<p>For example, when you sign up for an account on a social media or e-commerce website, you are likely sending data to a web server through an HTTP POST method. This POST method occurs at a particular URL, like <span class="urlFont">mywebsite.com/register</span>. The web application hosted on the server needs to map the POST request at the URL ending with <span class="urlFont">/register</span> (sometimes also described as an <strong>endpoint</strong>) to a particular registration service that it implements. The web application likely also has a repository service that is associated with a database, and that database is then updated based on your new account data. Finally, an HTTP response message with a particular status code is sent by the web server back to the client. Thus, a full-stack application (i.e., an application with both a frontend and a backend) will have to deal with security at multiple layers, from the information that is stored and retrieved from the database to the user-facing components like a login screen. The image below provides a simplified depiction of the interaction between a browser and a web application hosted on a server:</p>
+			<div class="image-container">
+				<figure>
+					<img src="http-client-server-diagram.png" alt="httpImage">
+					<figcaption class="caption"><strong>Figure 1:</strong> Interaction between a web client (browser) and a web application hosted on a server with an external database.</figcaption>
+				</figure>
+			</div>
+			<br>
+			<p>In this lab, you will be introduced to the basics of web application and database security using a demo Java web application. You will learn about authentication and authorization in web applications, password encoding in databases, and how to examine the logs of a web application to identify security events of potential interest, which is a valuable skill in network security as well as application debugging. By the end of this lab, you should hopefully have a better appreciation of how web appplications and databases need to manage their security needs.</p>
         </div>
         <div id="page2" class="page">
             <div class="pageHeader">
@@ -151,7 +159,7 @@
             <div class="image-container">
 				<figure>
 					<img src="goodLogin.png" alt="LoginImage">
-					<figcaption class="caption"><strong>Figure 1:</strong> Good login page of the demo web application.</figcaption>
+					<figcaption class="caption"><strong>Figure 2:</strong> Good login page of the demo web application.</figcaption>
 				</figure>
 			</div>
 			<p>You can't access the <span class="urlFont">/good-login</span> endpoint unless you are an authenticated user. You can try opening a new browser window and navigating to the application again, and try accessing the <span class="urlFont">/good-login</span> endpoint. If you do, you should be redirected to the <span class="urlFont">/login.html</span> endpoint. Under the hood, the web application has a security configuration class file written in Java that only grants unauthenticated users access to certain endpoints, namely those associated with logging in and registering new accounts.</p>
@@ -169,8 +177,8 @@
 			<p>However, there is also a page for admins only. Try clicking on that link from the Good Login page. Since your user role is only that of a regular user, you are denied access to the URL endpoint <span class="urlFont">/admin-only</span> and are instead redirected to a page with the URL endpoint <span class="urlFont">/access-denied</span>. This means that the HTTP GET request that you sent to the <span class="urlFont">/admin-only</span> endpoint was unsuccessful, and an HTTP packet was sent back with the response code 403, indicating a type of client-side error where the requested resource is not allowed. Under the hood, the Java application is using the method <span class="code">hasAuthority("admin")</span> to specify which URLs can be accessed exclusively by users with a particular authorization (represented by their user role). You can pass different user roles as parameters in the method to structure your application's access control mechanism.</p>
 			<p>Now, let's try logging in as admin. Click on the "Login as different user" link, or navigate back to the login.html page. Type <strong>admin</strong> in the username field and <strong>cpre530</strong> in the password field. This time, when you arrive at the Good Login page, your User Role should be Admin. Try clicking on the Admins Only link now. You should be able to access the endpoint, and find two things that probably shouldn't be exposed in a real-life application: a link to download the application's database, and another link to download the application's log file. For now, click on the first link to download the database. You should get a file called <span class="code">securitydemo.db</span>. We will use that file in the next section of the lab.</p>
 			<br>
-			<div class="subHeader">Access Control with HTTP Header Fields</div>
-			<p>In addition to implementing access control with user authorization, you can also implement access control using the headers of the HTTP protocol. This might be useful if you want a particular resource to only be accessed from a particular endpoint. For example, in the Admin Page of the demo web application, clicking on the link to download a database sends a GET request to the URL endpoint <span class="urlFont">/download-db</span>. Similarly, trying to download the log file sends a GET request to <span class="urlFont">/download-log</span>. You might not want these endpoints to be accessible from any other place except from the Admin Page. To implement this, you can look at the <span class="code">Referer</span> request header of the HTTP protocol (that's not a typo - the header was misspelled in the original proposal, and the misspelling stuck around). The <span class="code">Referer</span> request header identifies the address of the web page from which a resource is being requested, so you can implement conditional logic in your backend to deny access to a certain endpoint unless it has a valid referrer.</p>
+			<div class="subHeader">Access Control with HTTP Headers</div>
+			<p>In addition to implementing access control with user authorization, you can also implement access control using the headers of the HTTP protocol. This might be useful if you want a particular resource to only be accessed from a particular endpoint. For example, in the Admin Page of the demo web application, clicking on the link to download a database sends a GET request to the URL endpoint <span class="urlFont">/download-db</span>. Similarly, trying to download the log file sends a GET request to <span class="urlFont">/download-log</span>. You might not want these endpoints to be accessible from any other place except from the Admin Page. To implement this, you can look at a particular request header of the HTTP protocol called <span class="code">Referer</span> (that's not a typo - the header was misspelled in the original proposal, and the misspelling stuck around). The <span class="code">Referer</span> request header identifies the address of the web page from which a resource is being requested, so you can implement conditional logic in your backend to deny access to a certain endpoint unless it has a valid referrer.</p>
 			<p>Here's an example of Java code in the demo web application that grabs the HTTP <span class="code">Referer</span> header and carries out basic control flow:
 			<div>
 				<pre>
@@ -184,10 +192,10 @@
             <div class="image-container">
 				<figure>
 					<img src="referrer-403.png" alt="ReferrerImage">
-					<figcaption class="caption"><strong>Figure 2:</strong> Access Control using HTTP Referrers</figcaption>
+					<figcaption class="caption"><strong>Figure 3:</strong> Access Control using HTTP Referrers</figcaption>
 				</figure>
 			</div>
-			<p>If you are logged into the demo web application as Admin, try accessing the <span class="urlFont">/download-db</span> endpoint from somewhere other than the Admin Page, like from the Public Info page. This time, you should get a 403 Forbidden error despite having proper authorization to access <span class="urlFont">/download-db</span>. Thus, looking at the header fields of the HTTP protocol lets you implement tighter and more refined access control in your web application.</p>
+			<p>If you are logged into the demo web application as Admin, try accessing the <span class="urlFont">/download-db</span> endpoint by typing the URL into your browser instead of clicking on the Link in the Admin Page. This time, you should get a 403 Forbidden error despite having proper authorization to access <span class="urlFont">/download-db</span>. Another example where access control with HTTP referrers is used is the <span class="urlFont">/good-registration</span> endpoint, which is only accessible after you have registered a new user account using the registration form. Thus, by using the referrer headers of the HTTP protocol, you can implement tighter and more refined access control in your web application so that certain URLs can't be accessed in invalid or inappropriate contexts.</p>
         </div>
 		<div id="page4" class="page">
 			<div class="pageHeader">
@@ -201,14 +209,14 @@
 			<div class="image-container">
 				<figure>
 					<img src="dbBrowser1.png" alt="dbBrowserImage1">
-					<figcaption class="caption"><strong>Figure 3:</strong> Open Database and View Database Structure in DB Browser</figcaption>
+					<figcaption class="caption"><strong>Figure 4:</strong> Open Database and View Database Structure in DB Browser</figcaption>
 				</figure>
 			</div>
 			<p>If you click on the individual tables like <strong>accounts</strong>, you can see the different columns that define the table. Now, click on the “Browse Data” tab to see the data stored in the accounts table. It should look something like this:</p>
 			<div class="image-container">
 				<figure>
 					<img src="dbBrowser2.png" alt="dbBrowserImage2">
-					<figcaption class="caption"><strong>Figure 4:</strong> Browse Data in User Accounts table in DB Browser</figcaption>
+					<figcaption class="caption"><strong>Figure 5:</strong> Browse Data in User Accounts table in DB Browser</figcaption>
 				</figure>
 			</div>
 			<p>The <strong>accounts</strong> table has four columns: user_id (which is incremented automatically), username, password, and role. There are two roles defined in the database, <span class="code">admin</span> and <span class="code">reg_user</span>, as we discussed in the previous section. As we can see, there is only one admin account. The username can be any string, provided they are unique in the database. You should also see the username that you registered your account with in the database table, and the row representing your user should have the value <span class="code">reg_user</span> in the role field. But what is going on with the password fields? Why are they displayed as a long string of seemingly random characters?</p>
@@ -219,7 +227,7 @@
 			<div class="image-container">
 				<figure>
 					<img src="hashFunction.png" alt="hashFunctionImage">
-					<figcaption class="caption"><strong>Figure 5:</strong> Using a hash function in password-based authentication. From Jacobson (2008: 446)</figcaption>
+					<figcaption class="caption"><strong>Figure 6:</strong> Using a hash function in password-based authentication. From Jacobson (2008: 446)</figcaption>
 				</figure>
 			</div>
 			<br>
@@ -228,7 +236,7 @@
 			<div class="image-container">
 				<figure>
 					<img src="bcrypt.png" alt="bcryptImage">
-					<figcaption class="caption"><strong>Figure 6:</strong> Using bcrypt to encode a password string. From Batubara, et al. (2021: 2)</figcaption>
+					<figcaption class="caption"><strong>Figure 7:</strong> Using bcrypt to encode a password string. From Batubara, et al. (2021: 2)</figcaption>
 				</figure>
 			</div>
 			
@@ -250,7 +258,7 @@
 			<div class="image-container">
 				<figure>
 					<img src="ip-ban.png" alt="ipBlockImage">
-					<figcaption class="caption"><strong>Figure 7:</strong> Example of a screen shown to a user whose IP address is blocked by a host from accessing an application.</figcaption>
+					<figcaption class="caption"><strong>Figure 8:</strong> Example of a screen shown to a user whose IP address is blocked by a host from accessing an application.</figcaption>
 				</figure>
 			</div>
 			
@@ -263,7 +271,7 @@
 			</div>
 			<p>Using the knowledge gained from this lab and reputable online resources, try answering the following questions:</p>
 			<p>1. In this lab, we discussed access control with both user authorization and HTTP referrer headers. Imagine if a web application had endpoints for downloading resources that are protected by HTTP Referer validation so that they can be only accessed from a particular location. The locations from which you can access the download links are protected by an implementation of authentication and authorization, but the download links themselves are not. Would this pose a security vulnerability? If so, would the same vulnerability also apply to the demo web application used in the lab?</p>
-			<p>2. We discussed using logs for detecting authentication-based attacks, like a failed login attempt. How might you use logs for detecting traffic-based attacks, and how would you implement protections against them?</p>
+			<p>2. We discussed using logs for detecting authentication-based attacks, like a failed login attempt. Without going into too much detail on implementation, briefly describe how you might use logs for detecting traffic-based attacks, and how you might design protections against such attacks using information from logs.</p>
 			<p>3a. Imagine you are a hacker and you got access to the database file used by the demo web application, but not the application itself. How would you modify the database file so that you can login to the web application as a user with the role admin? Be specific and clearly explain every step you would take after getting control of the database. (Note: It is not possible to login as a user if that user's password field is not a bcrypt encoded string, as the Java application is expecting the password to be encoded in bcrypt)</p>
 			<p>3b. Relational databases can be modified using Structured Query Language (SQL). Do research on how SQL works. Based on your answer to the above question, write an SQL query that you could use to hack the application and login as an admin user.</p>
 		</div>
