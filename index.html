@@ -32,7 +32,7 @@
     #menu {
         width: 280px;
         background-color: #ffffff;
-		padding-top: 50px;
+		padding-top: 10px;
 		padding-left: 5px;
 		padding-right: 5px;
     }
@@ -45,7 +45,7 @@
 		margin-right: 20px;
         background-color: #FFF8E0;
 		padding-top: 20px;
-		margin-top: 66px;
+		margin-top: 25px;
 		margin-bottom: 20px;
 		border: 1px solid #ccc;
 		border-radius: 5px;
@@ -275,10 +275,11 @@
 					<h2>Analysis and Further Exploration</h2>
 				</div>
 				<p>Using the knowledge gained from this lab and reputable online resources, try answering the following questions:</p>
-				<p>1. In this lab, we discussed access control with both user authorization and HTTP referrer headers. Imagine if a web application had endpoints for downloading resources that are protected by HTTP referrer validation so that they can be only accessed from links on a particular page. The page from which you can access the download links is protected by an implementation of authentication and authorization, but the download endpoints themselves are not. Would this pose a security vulnerability? If so, would the same vulnerability also apply to the demo web application used in the lab?</p>
-				<p>2. We discussed using logs for detecting authentication-based attacks, like a failed login attempt. Without going into too much detail on implementation, briefly describe how you might use logs for detecting traffic-based attacks, and how you might design protections against such attacks using information from logs.</p>
-				<p>3a. Imagine you are a hacker and you got access to the database file used by the demo web application, but not the application itself. How would you modify the database file so that you can login to the web application as a user with the role admin? Be specific and clearly explain every step you would take after getting control of the database. (Note: It is not possible to login as a user if that user's password field is not a bcrypt encoded string, as the Java application is expecting the password to be encoded in bcrypt)</p>
-				<p>3b. Relational databases can be modified using Structured Query Language (SQL). Do research on how SQL works. Then, based on your answer to the above question, write an SQL query that you could use to hack the application and login as an admin user.</p>
+				<p>1. In this lab, we discussed access control with both user authorization and HTTP referrers. Imagine if a web application's endpoints for downloading resources are protected by HTTP referrer validation so that they can be only accessed from links on a particular page. The page that contains the download links is protected by user authentication and authorization, but the download endpoints themselves are not. How might this pose a security vulnerability? Would the same vulnerability also apply to the demo web application used in the lab?</p>
+				<p>2. In network security, attacks can be classified into four categories based on how they exploit vulnerabilities: header-based, protocol-based, authentication-based, and traffic-based. To learn more about this taxonomy, you can review Dr. Doug Jacobson's summary of the four types of vulnerabilities and attacks <a target="_blank" href="network-security-taxonomy.pdf">here</a>. Based on your answer to the previous question, how would you classify the vulnerability and corresponding attack according to the taxonomy?</p>
+				<p>3. We discussed using logs for detecting authentication-based attacks, like a brute force attack on a user's credentials. Without going into too much detail on implementation, briefly describe how you might use logs for detecting traffic-based attacks, and how you might design protections against such attacks using information from logs.</p>
+				<p>4. Imagine you are a hacker and you got access to the database file used by the demo web application, but not the application itself. How would you modify the database file so that you can login to the web application as a user with the role admin? Be specific and clearly explain every step you would take after getting control of the database. (Note: It is not possible to login as a user if that user's password field is not a bcrypt encoded string, as the Java application is expecting the password to be encoded in bcrypt)</p>
+				<p>5. Relational databases can be modified using Structured Query Language (SQL). Do research on how SQL works. Then, based on your answer to the previous question, write an SQL query that you could use to hack the application and login as an admin user.</p>
 			</div>
 		</div>
 	</div>
